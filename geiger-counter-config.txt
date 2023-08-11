@@ -1,0 +1,8 @@
+Geiger counter config
+
+SSID: ResNet - Open
+Password: @cc3ssSt8ff
+Website: www.gmcmap.com
+URL: log2.asp
+User ID: 06525
+Geiger Counter ID: 70551331328
