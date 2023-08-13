@@ -40,3 +40,8 @@ On my device, returns: 61814�
 
 or as raw bytes: [36][01][31][38][31][34][b8]
 Convert this to ascii to get result
+
+On the actual device screen (About -> Serial Number), I see:
+
+57 61 48 48 36 35
+36 01 31 38 31 34
