@@ -8,3 +8,4 @@ repository = "https://github.com/raleighlittles/GQ_Geiger_Counter_Comm_Protocol"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+serialport = "4.2.2"
