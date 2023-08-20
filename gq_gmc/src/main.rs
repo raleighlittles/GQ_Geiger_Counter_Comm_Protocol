@@ -11,5 +11,11 @@ fn main() {
 
     //send_msg(serial_port, "GETVER");
     //send_msg(&*serial_port, "GETVER".to_string()); // expected &mut dyn SerialPort, found &dyn SerialPort
-    send_msg(&mut *serial_port, "KEY3".to_string()).unwrap();
+    send_msg(&mut *serial_port, "GETVER".to_string()).unwrap();
+    
+    std::thread::sleep(std::time::Duration::from_millis(10));
+
+    let mut serial_buf: Vec<u8> = vec![0; 32];
+    serial_port.read(serial_buf.as_mut_slice()).expect("Found no data!");
+    println!("Returned {:?}", serial_buf);
 }
