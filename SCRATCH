@@ -1,3 +1,20 @@
+# todo
+
+Functionality supported:
+
+* Clock synchronization -- sync time between host and target
+* CSV logging:
+
+The name of the CSV file will come from the model number ('GETVER') and the serial number ('GETSERIAL')
+Query battery voltage ('GETVOLT'), Gyroscope data ('GETGYRO'), Counts per second ('GETCPS') repeatedly, with a one second delay. CSV columns will be:
+
+Timestamp (epoch), Timestamp (human), CPM, battery voltage, gyroscope
+
+Gyroscope coordinates
+
+
+# config
+
 Serial port settings
 
 ```
@@ -45,3 +62,9 @@ On the actual device screen (About -> Serial Number), I see:
 
 57 61 48 48 36 35
 36 01 31 38 31 34
+
+# gyro
+
+Gyro data from standing up: 254, 176, 62, 208, 4, 176, 170, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+
+Gyro data from lying down: 0, 64, 255, 144, 191, 48, 170, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
