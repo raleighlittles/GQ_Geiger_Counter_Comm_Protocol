@@ -23,5 +23,10 @@ pub fn send_msg(serial_port : &mut dyn serialport::SerialPort, msg_contents : St
 
     let msg : String = build_msg(msg_contents);
 
-    return serial_port.write(msg.as_bytes());
+    let result : Result<usize, std::io::Error> = serial_port.write(msg.as_bytes());
+
+    // Sleep after writing, to give the device time to respond to a command
+    std::thread::sleep(std::time::Duration::from_millis(10));
+
+    return result;
 }
