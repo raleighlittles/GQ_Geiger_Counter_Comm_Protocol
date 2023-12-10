@@ -8,7 +8,7 @@ pub fn connect_to_device(character_device_file : String, baud_rate : u32) -> ser
     return serialport::new(character_device_file, baud_rate).timeout(std::time::Duration::ZERO);
 }
 
-fn build_msg(msg_contents : String) -> String {
+pub fn build_msg(msg_contents : String) -> String {
 
     let mut msg : String = "".to_string();
 
@@ -26,7 +26,7 @@ pub fn send_msg(serial_port : &mut dyn serialport::SerialPort, msg_contents : St
     let result : Result<usize, std::io::Error> = serial_port.write(msg.as_bytes());
 
     // Sleep after writing, to give the device time to respond to a command
-    std::thread::sleep(std::time::Duration::from_millis(50));
+    std::thread::sleep(std::time::Duration::from_millis(100));
 
     return result;
 }
