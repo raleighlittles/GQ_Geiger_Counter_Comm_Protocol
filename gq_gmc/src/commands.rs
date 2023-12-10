@@ -1,8 +1,7 @@
-
+use self::ParameterlessCommand::*;
 
 #[derive(Debug)]
 pub enum ParameterlessCommand {
-
     GETVER = 1,
 
     GETCPM = 2,
@@ -25,7 +24,7 @@ pub enum ParameterlessCommand {
 
     FACTORYRESET = 20,
 
-    REBOOT  = 21,
+    REBOOT = 21,
 
     GETDATETIME = 23,
 
@@ -59,21 +58,62 @@ pub enum ParameterlessCommand {
 
     GETCPMH = 46,
 
-    GETCPML = 47
-
+    GETCPML = 47,
 }
 
 /// https://stackoverflow.com/questions/32710187/how-do-i-get-an-enum-as-a-string
 impl std::fmt::Display for ParameterlessCommand {
-    
+
     fn fmt(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(formatter, "{:?}", self)
+    }
+
+}
+
+impl ParameterlessCommand {
+
+    /// https://stackoverflow.com/a/21376984/1576548
+    /// Simple trick around getting an iterable list of enum variants because there's no built-in Rust trait to do so.
+    /// See: https://github.com/rust-lang/rfcs/issues/284
+    pub fn iterator() -> std::slice::Iter<'static, ParameterlessCommand> {
+
+        static PARAMETERLESS_COMMANDS: [ParameterlessCommand; 29] = [ 
+            ALARM0,
+            ALARM1,
+            CFGUPDATE,
+            ECFG, 
+            EchoOFF, 
+            EchoON, 
+            FACTORYRESET, 
+            GETCFG,
+            GETCPM,
+            GETCPMH, 
+            GETCPML,
+            GETCPS,
+            GETDATETIME,
+            GETGYRO,
+            GETMAXCPS,
+            GETSERIAL,
+            GETTEMP,
+            GETVER,
+            GETVOLT,
+            HEARTBEAT1,
+            HEARTBEAT2,
+            POWEROFF,
+            POWERON,
+            REBOOT,
+            SPEAKER0,
+            SPEAKER1,
+            WiFiLevel,
+            WiFiOFF,
+            WiFiON ];
+
+        return PARAMETERLESS_COMMANDS.iter();
     }
 }
 
 #[derive(Debug)]
 pub enum ButtonKeyCommand {
-
     /// Back button
     KEY0 = 0,
 
@@ -83,13 +123,11 @@ pub enum ButtonKeyCommand {
     /// Up arrow
     KEY2 = 2,
 
-    /// Power button 
-    KEY3 = 3
-    
+    /// Power button
+    KEY3 = 3,
 }
 
 impl std::fmt::Display for ButtonKeyCommand {
-    
     fn fmt(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(formatter, "{:?}", self)
     }
