@@ -69,20 +69,16 @@ fn main() {
         // Prepare CSV file and setup column headers
         let mut csv_writer = csv::Writer::from_path("geiger_log.csv").expect("Error: Can't initialize CSV file");
 
-        csv_writer.write_record(&["DeviceInfo", "Datetime ('YYMMDDHHMMSS')", "Voltage", "Gyroscope (X, Y, Z)", "Counts_Per_Second", "Max_CountsPerSecond", "Counts_Per_Minute"]).expect("Unable to write column headers for CSV");
+        csv_writer.write_record(&["Datetime ('YYMMDDHHMMSS')", "DeviceInfo", "Voltage", "Gyroscope (X; Y; Z;)", "Counts_Per_Second", "Max_CountsPerSecond", "Counts_Per_Minute"]).expect("Unable to write column headers for CSV");
 
         loop {
 
-            // get "DeviceInfo"
-            gq_gmc_protocol::send_msg(&mut *serial_port, commands::ParameterlessCommand::GETVER.to_string()).expect("Error querying device information");
-            let mut device_name_resp_buffer: Vec<u8> = vec![0; 32];
-            serial_port.read(&mut device_name_resp_buffer.as_mut_slice()).expect("Couldn't read version response from serial port");
-            let device_name = std::str::from_utf8(&device_name_resp_buffer).expect("Unable to decode response from serial port into Unicode string");
-       
             // get Datetime
             gq_gmc_protocol::send_msg(&mut *serial_port, commands::ParameterlessCommand::GETDATETIME.to_string()).expect("Error querying device datetime");
 
             let mut device_datetime_resp_buffer: Vec<u8> = vec![0; 7];
+
+            serial_port.read(&mut device_datetime_resp_buffer.as_mut_slice()).expect("Couldn't read version response from serial port");
 
             if device_datetime_resp_buffer[6] != 0xAA {
                 
@@ -91,9 +87,47 @@ fn main() {
 
             let device_datetime = std::str::from_utf8(&device_datetime_resp_buffer[0 .. 6]).unwrap();
 
+            // get "DeviceInfo"
+            gq_gmc_protocol::send_msg(&mut *serial_port, commands::ParameterlessCommand::GETVER.to_string()).expect("Error querying device information");
+            let mut device_name_resp_buffer: Vec<u8> = vec![0; 32];
+            serial_port.read(&mut device_name_resp_buffer.as_mut_slice()).expect("Couldn't read version response from serial port");
+            let device_name = std::str::from_utf8(&device_name_resp_buffer).expect("Unable to decode response from serial port into Unicode string");
 
             // get Voltage
             gq_gmc_protocol::send_msg(&mut *serial_port, commands::ParameterlessCommand::GETVOLT.to_string()).expect("Error querying device voltage");
+            let mut voltage_resp_buffer : Vec<u8> = vec![0; 5];
+            serial_port.read(&mut voltage_resp_buffer.as_mut_slice()).expect("Couldn't read voltage from device");
+            let device_voltage = std::str::from_utf8(&voltage_resp_buffer).expect("Unable to decode voltage reading from serial port into Unicode string");
+
+            // get Gyroscope
+            gq_gmc_protocol::send_msg(&mut *serial_port, commands::ParameterlessCommand::GETGYRO.to_string()).expect("Error querying device gyroscope data");
+            let mut device_gyro_resp_bufer : Vec<u8> = vec![0; 7];
+            serial_port.read(&mut device_gyro_resp_bufer).expect("Unable to read gyroscope response from device");
+            let gyro_data = decoder::decode_gyro_data(&device_gyro_resp_bufer);
+            let gyro_data_printable = format!("({}; {}; {};)", gyro_data.0, gyro_data.1, gyro_data.2);
+
+            // get CountsPerSecond
+            gq_gmc_protocol::send_msg(&mut *serial_port, commands::ParameterlessCommand::GETCPS.to_string()).expect("Error querying device counts per second");
+            let mut device_cps_resp_buffer : Vec<u8> = vec![0; 4];
+            serial_port.read(&mut device_cps_resp_buffer).expect("Unable to read counts per second value from device");
+            let counts_per_second = u32::from_le_bytes(device_cps_resp_buffer.as_slice().try_into().unwrap());
+
+            // get Max CountsPerSecond
+            gq_gmc_protocol::send_msg(&mut *serial_port, commands::ParameterlessCommand::GETMAXCPS.to_string()).expect("Error querying max CPS from device");
+            let mut device_max_cps_resp_buffer : Vec<u8> = vec![0; 4];
+            serial_port.read(&mut device_max_cps_resp_buffer).expect("Unable to read max counts per second value");
+            let max_cps = u32::from_le_bytes(device_max_cps_resp_buffer.as_slice().try_into().unwrap());
+
+            // get CountsPerMinute
+            gq_gmc_protocol::send_msg(&mut *serial_port, commands::ParameterlessCommand::GETCPM.to_string()).expect("Error querying counts per minute");
+            let mut device_cpm_resp_buffer : Vec<u8> = vec![0; 4];
+            serial_port.read(&mut device_cpm_resp_buffer).expect("Unable to read counts per minute");
+            let counts_per_minute = u32::from_be_bytes(device_cpm_resp_buffer.as_slice().try_into().unwrap());
+
+            csv_writer.write_record(&[device_datetime, device_name, device_voltage, &gyro_data_printable, &counts_per_second.to_string(), &max_cps.to_string(), &counts_per_minute.to_string()]).expect("Error couldn't write data to CSV file");
+            
+            println!("Added row to CSV");
+
         }
 
     }
@@ -112,6 +146,16 @@ fn main() {
 
                 // Send the command
 
+                gq_gmc_protocol::send_msg(&mut *serial_port, user_specified_cmd).expect("Error: couldn't send command to device");
+
+                let mut user_cmd_resp_buffer : Vec<u8> = vec![0; 32];
+
+                serial_port.read(&mut user_cmd_resp_buffer.as_mut_slice()).expect("Couldn't read response buffer from device");
+
+                let user_cmd_resp = std::str::from_utf8(&user_cmd_resp_buffer).expect("Invalid UTF-8 sequence");
+
+                println!("Response: (Parsed) '{}' (Raw) {:?}", user_cmd_resp, user_cmd_resp_buffer);
+
 
                 // exit the loop
                 break;
@@ -120,7 +164,7 @@ fn main() {
 
         if !is_valid_cmd {
             
-            panic!("Error: '{}' is not a recognized command", user_specified_cmd);
+            panic!("Error: The command provided is not a recognized command");
         }
         
     }
