@@ -6,6 +6,7 @@ mod commands;
 mod decoder;
 mod gq_gmc_protocol;
 mod helpers;
+mod gui;
 
 
 fn main() {
@@ -173,6 +174,30 @@ fn main() {
             panic!("Error: The command provided is not a recognized command");
         }
         
+    }
+    // Launch the GUI
+    else if command_type_prefix == "--gui" {
+
+        let egui_options = eframe::NativeOptions {
+            viewport: egui::ViewportBuilder::default().with_inner_size([320.0, 240.0]),
+            ..Default::default()
+        };
+
+        eframe::run_native(
+            "My egui App",
+            egui_options,
+            Box::new(|cc| {
+                // This gives us image support:
+                egui_extras::install_image_loaders(&cc.egui_ctx);
+    
+                Box::<gui::MyApp>::default()
+            }),
+        );
+
+
+    } else {
+
+        panic!("Unrecognized command option.");
     }
 
 
