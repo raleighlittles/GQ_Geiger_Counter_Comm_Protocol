@@ -66,8 +66,10 @@ fn main() {
     // Log the geiger counter's measurements to a CSV file
     else if command_type_prefix == "--log" {
 
+        let csv_filename : String = std::env::args().nth(4).expect("No CSV filename specified");
+
         // Prepare CSV file and setup column headers
-        let mut csv_writer = csv::Writer::from_path("geiger_log.csv").expect("Error: Can't initialize CSV file");
+        let mut csv_writer = csv::Writer::from_path(csv_filename).expect("Error: Can't initialize CSV file");
 
         csv_writer.write_record(&["Datetime ('YYMMDDHHMMSS')", "DeviceInfo", "Voltage", "Gyroscope (X; Y; Z;)", "Counts_Per_Second", "Max_CountsPerSecond", "Counts_Per_Minute"]).expect("Unable to write column headers for CSV");
 
@@ -85,11 +87,13 @@ fn main() {
                 panic!("Invalid response received after querying datetime, expected last byte to be 0xAA but got '{}' instead", device_datetime_resp_buffer[6]);
             }
 
-            let device_datetime = std::str::from_utf8(&device_datetime_resp_buffer[0 .. 6]).unwrap();
+            //let device_datetime = std::str::from_utf8(&device_datetime_resp_buffer[0 .. 6]).unwrap();
+            //let device_datetime = format!("{:?}", device_datetime_resp_buffer[0..6]);
+            let device_datetime = device_datetime_resp_buffer[0..6].into_iter().map(|i| i.to_string()).collect::<String>();
 
             // get "DeviceInfo"
             gq_gmc_protocol::send_msg(&mut *serial_port, commands::ParameterlessCommand::GETVER.to_string()).expect("Error querying device information");
-            let mut device_name_resp_buffer: Vec<u8> = vec![0; 32];
+            let mut device_name_resp_buffer: Vec<u8> = vec![0; 15];
             serial_port.read(&mut device_name_resp_buffer.as_mut_slice()).expect("Couldn't read version response from serial port");
             let device_name = std::str::from_utf8(&device_name_resp_buffer).expect("Unable to decode response from serial port into Unicode string");
 
@@ -124,9 +128,11 @@ fn main() {
             serial_port.read(&mut device_cpm_resp_buffer).expect("Unable to read counts per minute");
             let counts_per_minute = u32::from_be_bytes(device_cpm_resp_buffer.as_slice().try_into().unwrap());
 
-            csv_writer.write_record(&[device_datetime, device_name, device_voltage, &gyro_data_printable, &counts_per_second.to_string(), &max_cps.to_string(), &counts_per_minute.to_string()]).expect("Error couldn't write data to CSV file");
-            
-            println!("Added row to CSV");
+            println!("Writing values to CSV: {}, {}, {}", device_datetime, device_name, device_voltage);
+
+            csv_writer.write_record(&[device_datetime.to_string(), device_name.to_string(), device_voltage.to_string(), gyro_data_printable, counts_per_second.to_string(), max_cps.to_string(), counts_per_minute.to_string()]).expect("Error couldn't write data to CSV file");
+
+            csv_writer.flush().expect("Error flushing CSV file");
 
         }
 
