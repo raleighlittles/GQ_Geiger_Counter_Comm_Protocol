@@ -1,3 +1,4 @@
+![build-badge](https://github.com/raleighlittles/GQ_Geiger_Counter_Comm_Protocol/actions/workflows/main.yml/badge.svg)
 # Background
 
 A company called GQ makes "smart" nuclear radiation detecting devices aka ["geiger counters"](https://en.wikipedia.org/wiki/Geiger_counter). These devices come with a USB port which provides a serial interface to the device, intended for data logging usage.
