@@ -22,6 +22,10 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
+      # https://stackoverflow.com/questions/73693257/how-to-fix-could-not-find-system-library-libudev-when-installing-cargo-flash
+      - name: Prepare
+        run: echo "Installing dependencies" && sudo apt install -y pkg-config libusb-1.0-0-dev libftdi1-dev libudev-dev
+
       # Runs a single command using the runners shell
       - name: Build
-        run: echo "Building project!" && cargo build --manifest-path gq_gmc/Cargo.toml
+        run: echo "Building project on Ubuntu version $(lsb_release -ds)" && cargo build --manifest-path gq_gmc/Cargo.toml
