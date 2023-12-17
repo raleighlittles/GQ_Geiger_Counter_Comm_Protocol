@@ -30,14 +30,17 @@ impl eframe::App for MyApp {
                     println!("Pressing Key3");
                 }
                 
-                if row_ui.add(egui::ImageButton::new(egui::include_image!("assets/caret-up-solid.svg"))).clicked() {
+                // if row_ui.add(egui::ImageButton::new(egui::include_image!("assets/caret-up-solid.svg"))).clicked() {
+                    if row_ui.add_sized([100.0, 100.0], egui::ImageButton::new(egui::include_image!("assets/caret-up-solid.svg"))).clicked() {
                     println!("Pressing Key2");
                 }
-                if row_ui.add(egui::ImageButton::new(egui::include_image!("assets/caret-down-solid.svg"))).clicked() {
+                //if row_ui.add(egui::ImageButton::new(egui::include_image!("assets/caret-down-solid.svg"))).clicked() {
+                    if row_ui.add_sized([100.0, 100.0], egui::ImageButton::new(egui::include_image!("assets/caret-down-solid.svg"))).clicked() {
                     println!("Pressing Key1");
                 }
 
-                if row_ui.add(egui::ImageButton::new(egui::include_image!("assets/clock-rotate-left-solid.svg"))).clicked() {
+                //if row_ui.add(egui::ImageButton::new(egui::include_image!("assets/clock-rotate-left-solid.svg"))).clicked() {
+                    if row_ui.add_sized([100.0, 100.0], egui::ImageButton::new(egui::include_image!("assets/clock-rotate-left-solid.svg"))).clicked() {
                     println!("Pressing Key0");
                 }
 

@@ -192,7 +192,9 @@ fn main() {
                 // This gives us image support:
                 egui_extras::install_image_loaders(&cc.egui_ctx);
 
-    
+                // Enable light theme
+                &cc.egui_ctx.set_visuals(egui::Visuals::light());
+
                 Box::<gui::MyApp>::default()
             }),
         );
