@@ -20,22 +20,28 @@ impl eframe::App for MyApp {
 
             ui.label("Device buttons");
 
-            if ui.add(egui::ImageButton::new(egui::include_image!("./assets/power-off-solid.svg"))).clicked() {
-                println!("Pressing Key3");
-            }
-            
-            if ui.add(egui::ImageButton::new(egui::include_image!("./assets/caret-up-solid.svg"))).clicked() {
-                println!("Pressing Key2");
-            }
-            if ui.add(egui::ImageButton::new(egui::include_image!("./assets/caret-down-solid.svg"))).clicked() {
-                println!("Pressing Key1");
-            }
+            ui.vertical(|row_ui| {
 
-            if ui.add(egui::ImageButton::new(egui::include_image!("./assets/clock-rotate-left-solid.svg"))).clicked() {
-                println!("Pressing Key0");
-            }
+                // if row_ui.add(egui::ImageButton::new(egui::include_image!("assets/power-off-solid.svg"))).clicked() {
+                //     println!("Pressing Key3");
+                // }
 
-            ui.end_row();
+                if row_ui.add_sized([100.0, 100.0], egui::ImageButton::new(egui::include_image!("assets/power-off-solid.svg"))).clicked() {
+                    println!("Pressing Key3");
+                }
+                
+                if row_ui.add(egui::ImageButton::new(egui::include_image!("assets/caret-up-solid.svg"))).clicked() {
+                    println!("Pressing Key2");
+                }
+                if row_ui.add(egui::ImageButton::new(egui::include_image!("assets/caret-down-solid.svg"))).clicked() {
+                    println!("Pressing Key1");
+                }
+
+                if row_ui.add(egui::ImageButton::new(egui::include_image!("assets/clock-rotate-left-solid.svg"))).clicked() {
+                    println!("Pressing Key0");
+                }
+
+            }); // end row
 
         });
     }
