@@ -52,13 +52,6 @@ fn main() {
     // Dump the geiger counter's configuration data to a file
     else if command_type_prefix == "--dump" {
 
-        // See TODO-1
-        // gq_gmc_protocol::send_msg(&mut *serial_port, commands::ParameterlessCommand::GETVER.to_string()).unwrap();
-        // let mut device_name_response_buffer: Vec<u8> = vec![0; 32];
-        // serial_port.read(&mut device_name_response_buffer.as_mut_slice()).expect("Couldn't read version response from serial port");
-        // let device_name = std::str::from_utf8(&device_name_response_buffer).expect("Unable to decode response from serial port into Unicode string").replace("+", "");
-        //println!("Device name: '{}'", device_name);
-
         let mut device_cfg_response_buffer : Vec<u8> = vec![0; 512];
         
         gq_gmc_protocol::send_msg(&mut *serial_port, commands::ParameterlessCommand::GETCFG.to_string()).unwrap();
@@ -96,8 +89,6 @@ fn main() {
                 panic!("Invalid response received after querying datetime, expected last byte to be 0xAA but got '{}' instead", device_datetime_resp_buffer[6]);
             }
 
-            //let device_datetime = std::str::from_utf8(&device_datetime_resp_buffer[0 .. 6]).unwrap();
-            //let device_datetime = format!("{:?}", device_datetime_resp_buffer[0..6]);
             let device_datetime = device_datetime_resp_buffer[0..6].into_iter().map(|i| i.to_string()).collect::<String>();
 
             // get "DeviceInfo"
@@ -154,12 +145,11 @@ fn main() {
         let mut is_valid_cmd: bool = false;
 
         for command in commands::ParameterlessCommand::iterator() {
-
+            
+            // The command the user specified is in fact a valid command, so go ahead and send it
             if user_specified_cmd == command.to_string() {
 
                 is_valid_cmd = true;
-
-                // Send the command
 
                 gq_gmc_protocol::send_msg(&mut *serial_port, user_specified_cmd).expect("Error: couldn't send command to device");
 
@@ -171,7 +161,6 @@ fn main() {
 
                 println!("Response: (Parsed) '{}' (Raw) {:?}", user_cmd_resp, user_cmd_resp_buffer);
 
-
                 // exit the loop
                 break;
             }
@@ -179,7 +168,7 @@ fn main() {
 
         if !is_valid_cmd {
             
-            panic!("Error: The command provided is not a recognized command");
+            panic!("Error: The command provided  is not a recognized command");
         }
         
     }
@@ -193,18 +182,16 @@ fn main() {
             ..Default::default()
         };
 
-        eframe::run_native(
+        let _ = eframe::run_native(
             "Geiger Counter Control App",
             egui_options,
-            Box::new(|cc| {
+            Box::new(|cc | {
                 // This gives us image support:
                 egui_extras::install_image_loaders(&cc.egui_ctx);
 
                 // Enable light theme
-                &cc.egui_ctx.set_visuals(egui::Visuals::light());
+                let _ = &cc.egui_ctx.set_visuals(egui::Visuals::light());
 
-
-                //return Box::<gui::MyApp>::default();
                 return Box::<gui::MyApp>::new(gui::MyApp{ serial_port: serial_port, device_name : device_name, alarm_enabled: false, speaker_enabled: false, debug_echo_enabled: false, wifi_enabled: true });
             }),
         );
@@ -212,22 +199,7 @@ fn main() {
 
     } else {
 
-        panic!("Unrecognized command option.");
+        panic!("Error! {} is not a recognized command option.", command_type_prefix);
     }
 
-
-
-    // gq_gmc_protocol::send_msg(&mut *serial_port,  commands::ParameterlessCommand::GETGYRO.to_string()).unwrap();
-    
-
-
-    // println!("Returned {:?}", serial_buf);
-
-    // let (x_pos, y_pos, z_pos) = decoder::decode_gyro_data(&serial_buf[0 .. 7]);
-
-    // println!("X : {} | Y : {} | Z: {}", x_pos, y_pos, z_pos);
-
-    // Print the response as a string
-    // let response = std::str::from_utf8(&serial_buf).expect("invalid utf-8 sequence");
-    //println!("{}", response);
 }

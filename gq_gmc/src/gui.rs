@@ -19,13 +19,6 @@ pub struct MyApp {
 
 }
 
-// impl Default for MyApp {
-//     fn default() -> Self {
-//         Self { }
-//     }
-// }
-
-
 impl eframe::App for MyApp {
 
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
@@ -33,16 +26,6 @@ impl eframe::App for MyApp {
         egui::CentralPanel::default().show(ctx, |ui| {
 
             ui.heading("GQ GMC Control");
-
-            // gq_gmc_protocol::send_msg(&mut *self.serial_port, commands::ParameterlessCommand::GETVER.to_string()).expect("Error querying device info!");
-
-            // let mut device_info_resp_buffer : Vec<u8> = vec![0; 15];
-
-            // self.serial_port.read(&mut device_info_resp_buffer.as_mut_slice());
-
-            // ui.label(std::str::from_utf8(&device_info_resp_buffer).expect("Error converting device info to string"));
-
-            //ui.label("Device buttons");
 
             ui.label(&self.device_name);
 
@@ -90,43 +73,35 @@ impl eframe::App for MyApp {
                         gq_gmc_protocol::send_msg(&mut *self.serial_port, commands::ParameterlessCommand::WiFiOFF.to_string()).expect("Error disabling WiFi");
                     }
                 }
-            }); // end horizontal
+            }); // end row
 
             ui.separator();
 
             ui.vertical(|col_ui| {
 
-                // if row_ui.add(egui::ImageButton::new(egui::include_image!("assets/power-off-solid.svg"))).clicked() {
-                //     println!("Pressing Key3");
-                // }
-
                 if col_ui.add_sized([100.0, 100.0], egui::ImageButton::new(egui::include_image!("assets/power-off-solid.svg"))).clicked() {
-                    //println!("Pressing Key3");
+
                     gq_gmc_protocol::send_msg(&mut *self.serial_port, commands::ButtonKeyCommand::KEY3.to_string()).expect("Error couldn't press power button on device");
                 }
                 
-                // if row_ui.add(egui::ImageButton::new(egui::include_image!("assets/caret-up-solid.svg"))).clicked() {
-                    if col_ui.add_sized([100.0, 100.0], egui::ImageButton::new(egui::include_image!("assets/caret-up-solid.svg"))).clicked() {
 
-                    //println!("Pressing Key2");
+                if col_ui.add_sized([100.0, 100.0], egui::ImageButton::new(egui::include_image!("assets/caret-up-solid.svg"))).clicked() {
+
                     gq_gmc_protocol::send_msg(&mut *self.serial_port, commands::ButtonKeyCommand::KEY2.to_string()).expect("Error couldn't press up arrow on device");
                 }
-                //if row_ui.add(egui::ImageButton::new(egui::include_image!("assets/caret-down-solid.svg"))).clicked() {
-                    if col_ui.add_sized([100.0, 100.0], egui::ImageButton::new(egui::include_image!("assets/caret-down-solid.svg"))).clicked() {
 
-                    //println!("Pressing Key1");
+                if col_ui.add_sized([100.0, 100.0], egui::ImageButton::new(egui::include_image!("assets/caret-down-solid.svg"))).clicked() {
+
                     gq_gmc_protocol::send_msg(&mut *self.serial_port, commands::ButtonKeyCommand::KEY1.to_string()).expect("Error couldn't press down arrow on device");
                 }
 
-                //if row_ui.add(egui::ImageButton::new(egui::include_image!("assets/clock-rotate-left-solid.svg"))).clicked() {
-                    if col_ui.add_sized([100.0, 100.0], egui::ImageButton::new(egui::include_image!("assets/clock-rotate-left-solid.svg"))).clicked() {
+                if col_ui.add_sized([100.0, 100.0], egui::ImageButton::new(egui::include_image!("assets/clock-rotate-left-solid.svg"))).clicked() {
 
-                        gq_gmc_protocol::send_msg(&mut *self.serial_port, commands::ButtonKeyCommand::KEY0.to_string()).expect("Error couldn't press back button on device");
+                    gq_gmc_protocol::send_msg(&mut *self.serial_port, commands::ButtonKeyCommand::KEY0.to_string()).expect("Error couldn't press back button on device");
 
-                    //println!("Pressing Key0");
                 }
 
-            }); // end row
+            }); // end column
 
         });
     }

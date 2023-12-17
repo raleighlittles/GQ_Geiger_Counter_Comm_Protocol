@@ -1,4 +1,8 @@
+/*
 
+Details of the communication protocol, these come from RFC1801
+
+*/
 
 const MESSAGE_START : &str = "<";
 const MESSAGE_END : &str = ">>";
@@ -25,7 +29,7 @@ pub fn send_msg(serial_port : &mut dyn serialport::SerialPort, msg_contents : St
 
     let result : Result<usize, std::io::Error> = serial_port.write(msg.as_bytes());
 
-    // Sleep after writing, to give the device time to respond to a command
+    // Sleep after writing, to give the device time to respond to a command, before reading
     std::thread::sleep(std::time::Duration::from_millis(100));
 
     return result;
