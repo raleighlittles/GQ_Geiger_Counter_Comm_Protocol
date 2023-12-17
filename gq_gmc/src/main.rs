@@ -179,16 +179,19 @@ fn main() {
     else if command_type_prefix == "--gui" {
 
         let egui_options = eframe::NativeOptions {
-            viewport: egui::ViewportBuilder::default().with_inner_size([320.0, 240.0]),
+            // viewport: egui::ViewportBuilder::default().with_inner_size([320.0, 240.0]),
+            // ..Default::default()
+            viewport: egui::ViewportBuilder::default().with_inner_size([500.0, 500.0]),
             ..Default::default()
         };
 
         eframe::run_native(
-            "My egui App",
+            "Geiger Counter Control App",
             egui_options,
             Box::new(|cc| {
                 // This gives us image support:
                 egui_extras::install_image_loaders(&cc.egui_ctx);
+
     
                 Box::<gui::MyApp>::default()
             }),
