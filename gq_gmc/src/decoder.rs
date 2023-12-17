@@ -2,13 +2,12 @@
 use crate::helpers;
 
 pub fn decode_gyro_data(sensor_bytes: &[u8]) -> (i16, i16, i16) {
+    
     if sensor_bytes.len() != 7 {
-
         panic!("Received incorrect amount of data for gyroscope. Expected 7 bytes");
     }
 
     if sensor_bytes[6] != 0xAA {
-        /// From the RFC
         panic!("Expected byte 7 to always be 0xAA -- verify gyroscope is calibrated?");
     }
 

@@ -1,6 +1,3 @@
-use chrono::Datelike;
-use commands::ParameterlessCommand;
-
 
 mod commands;
 mod decoder;
@@ -14,7 +11,18 @@ fn main() {
     let serial_port_file : String = std::env::args().nth(1).expect("No serial port file provided");
     let baud_rate : String = std::env::args().nth(2).expect("No baud rate provided. Please check your device settings (Others -> Comport Baud Rate");
 
-    let mut serial_port = gq_gmc_protocol::connect_to_device(serial_port_file, baud_rate.parse::<u32>().unwrap()).open().expect("Unable to open serial port");
+    let mut serial_port : Box<dyn serialport::SerialPort> = gq_gmc_protocol::connect_to_device(serial_port_file, baud_rate.parse::<u32>().unwrap()).open().expect("Unable to open serial port");
+
+    gq_gmc_protocol::send_msg(&mut *serial_port, commands::ParameterlessCommand::GETVER.to_string()).expect("Error querying device info!");
+
+    let mut device_info_resp_buffer : Vec<u8> = vec![0; 15];
+
+    serial_port.read(&mut device_info_resp_buffer.as_mut_slice()).expect("Unable to read device info from serial port");
+
+    let device_name = std::str::from_utf8(&device_info_resp_buffer).expect("Error converting device info to string").to_string();
+
+    println!("Interfacing with device '{}'", device_name);
+
 
     let command_type_prefix : String = std::env::args().nth(3).expect("No command type parameter received, expected either '--timesync' '--log', or '--dump'");
 
@@ -181,7 +189,7 @@ fn main() {
         let egui_options = eframe::NativeOptions {
             // viewport: egui::ViewportBuilder::default().with_inner_size([320.0, 240.0]),
             // ..Default::default()
-            viewport: egui::ViewportBuilder::default().with_inner_size([500.0, 500.0]),
+            viewport: egui::ViewportBuilder::default().with_inner_size([/* width */ 325.0, /* height */ 525.0]),
             ..Default::default()
         };
 
@@ -195,7 +203,9 @@ fn main() {
                 // Enable light theme
                 &cc.egui_ctx.set_visuals(egui::Visuals::light());
 
-                Box::<gui::MyApp>::default()
+
+                //return Box::<gui::MyApp>::default();
+                return Box::<gui::MyApp>::new(gui::MyApp{ serial_port: serial_port, device_name : device_name, alarm_enabled: false, speaker_enabled: false, debug_echo_enabled: false, wifi_enabled: true });
             }),
         );
 
