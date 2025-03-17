@@ -28,4 +28,4 @@ jobs:
 
       # Runs a single command using the runners shell
       - name: Build
-        run: echo "Building project on Ubuntu version $(lsb_release -ds)" && cargo build --manifest-path gq_gmc/Cargo.toml
+        run: echo "Building project on Ubuntu version $(lsb_release -ds)" && cargo build --manifest-path gq_gmc/Cargo.toml && cargo test --manifest-path gq_gmc/Cargo.toml
